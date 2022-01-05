@@ -1,11 +1,9 @@
 package com.example.roligt;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping ("api/animals")
@@ -15,9 +13,19 @@ public class AnimalController {
 
     public AnimalController() {
         this.animals = List.of(
-                new Animal("Tiger"),
-                new Animal("Zebra")
+                new Animal(UUID.randomUUID().toString(),"Tiger", "x", "", ""),
+                new Animal(UUID.randomUUID().toString(),"Zebra", "y", "", "")
         );
+    }
+
+    @PostMapping
+    public Animal createAnimal(@RequestBody CreateAnimal createAnimal){
+        return new Animal(UUID.randomUUID().toString(),createAnimal.getName(), createAnimal.getBinomialName(), "", "");
+    }
+
+    @PutMapping("/{id}")
+    public Animal update(@PathVariable String id, @RequestBody UpdateAnimal animal){
+        return new Animal(id, animal.getName(), animal.getBinomialName(), "", "");
     }
 
     @GetMapping
