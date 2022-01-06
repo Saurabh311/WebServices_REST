@@ -1,45 +1,56 @@
 package com.example.roligt;
 
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping ("api/animals")
+@AllArgsConstructor
 public class AnimalController {
 
-    private final List<Animal> animals;
-
-    public AnimalController() {
-        this.animals = List.of(
-                new Animal(UUID.randomUUID().toString(),"Tiger", "x", "", ""),
-                new Animal(UUID.randomUUID().toString(),"Zebra", "y", "", "")
-        );
-    }
+    AnimalService animalService;
 
     @PostMapping
     public Animal createAnimal(@RequestBody CreateAnimal createAnimal){
-        return new Animal(UUID.randomUUID().toString(),createAnimal.getName(), createAnimal.getBinomialName(), "", "");
+        return toDTO(animalService.createAnimal(createAnimal.getName(), createAnimal.getBinomialName()));
     }
 
     @PutMapping("/{id}")
     public Animal update(@PathVariable String id, @RequestBody UpdateAnimal animal){
-        return new Animal(id, animal.getName(), animal.getBinomialName(), "", "");
+        return toDTO(animalService.update(id, animal.getName(), animal.getBinomialName()));
     }
 
     @GetMapping
     public List<Animal> all(){
-        return animals;
+        return animalService.all()
+                .map(AnimalController::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable String id){
+        animalService.delete(id);
+
     }
 
     @GetMapping("/{id}")
     public Animal get(@PathVariable("id") String id){
-        return animals.stream()
-                .filter(animal -> animal.getId()
-                .equals(id))
-                .findAny()
-                .orElse(null);
+        return toDTO(animalService.get(id));
+    }
+
+
+    private static Animal toDTO(AnimalEntity animalEntity) {
+        return new Animal(
+                animalEntity.getId(),
+                animalEntity.getName(),
+                animalEntity.getBinomialName(),
+                animalEntity.getDescription(),
+                animalEntity.getConservationStatus()
+        );
     }
 }
 
