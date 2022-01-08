@@ -19,7 +19,7 @@ public class AnimalService {
 
     public AnimalEntity createAnimal(String name, String binomialName) {
         AnimalEntity animalEntity = new AnimalEntity(UUID.randomUUID().toString(), name, binomialName, "", "");
-        return AnimalRepository.save(animalEntity);
+        return animalRepository.save(animalEntity);
     }
 
     public AnimalEntity get(String id) {
