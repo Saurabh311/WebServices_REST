@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 public class AnimalService {
 
     AnimalRepository animalRepository;
+    JsonPlaceholderRemote jsonPlaceholderRemote;
 
     public Stream<AnimalEntity> all() {
         return animalRepository.all();
@@ -22,20 +23,31 @@ public class AnimalService {
         return animalRepository.save(animalEntity);
     }
 
-    public AnimalEntity get(String id) {
-        return animalRepository.get(id);
+    public AnimalEntity get(String id) throws AnimalNotFoundException {
+        return animalRepository.get(id)
+                .orElseThrow(() -> new AnimalNotFoundException(id));
     }
 
-    public AnimalEntity update(String id, String name, String binomialName) {
-        AnimalEntity animalEntity = animalRepository.get(id);
+    public AnimalEntity update(String id, String name, String binomialName) throws AnimalNotFoundException {
+        AnimalEntity animalEntity = animalRepository.get(id)
+                .orElseThrow(()-> new AnimalNotFoundException(id));
         animalEntity.setName(name);
         animalEntity.setBinomialName(binomialName);
         return animalRepository.save(animalEntity);
     }
 
-    public void delete(String id) {
-        AnimalEntity animalEntity = animalRepository.get(id);
+    public void delete(String id) throws AnimalNotFoundException {
+        AnimalEntity animalEntity = animalRepository.get(id)
+                .orElseThrow(()->new AnimalNotFoundException(id));
         animalRepository.delete(animalEntity);
 
+    }
+
+    public AnimalEntity link(String id, String remoteId) throws AnimalNotFoundException{
+        AnimalEntity animalEntity = animalRepository.get(id)
+                .orElseThrow(()-> new AnimalNotFoundException(id));
+        JsonPlaceholderRemote.JsonPlaceholder json = jsonPlaceholderRemote.get(remoteId);
+        animalEntity.setDescription(json.getBody());
+        return animalRepository.save(animalEntity);
     }
 }
