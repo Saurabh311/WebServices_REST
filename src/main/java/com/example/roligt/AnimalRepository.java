@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -21,8 +22,8 @@ public class AnimalRepository {
         return animals.values().stream();
     }
 
-    public AnimalEntity get(String id) {
-        return animals.get(id);
+    public Optional<AnimalEntity> get(String id) {
+        return Optional.ofNullable(animals.get(id));
     }
 
     public void delete(AnimalEntity animalEntity) {
